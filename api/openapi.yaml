@@ -1,0 +1,1142 @@
+openapi: 3.0.2
+info:
+  description: CloudFabrix RDA Platform API
+  title: CloudFabrix RDA Platform API
+  version: 3.2.2
+servers:
+- url: /
+paths:
+  /api/v2/login:
+    post:
+      description: Login into api server. (Run this first)
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInput'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Login into api server. (Run this first)
+      tags:
+      - Authentication
+  /api/v2/current_user:
+    get:
+      description: Get the details of the current user
+      operationId: get_current_user
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+          description: Successful Response
+      summary: Get current logged in user details
+      tags:
+      - Users
+  /api/v2/dashboards:
+    get:
+      description: Fetch meta data for dashboards
+      operationId: get_dashboards
+      parameters:
+      - description: <a href='https://bot-docs.cloudfabrix.io/reference_guides/cfxql/'>cfxql
+          query</a> string to filter the results
+        explode: true
+        in: query
+        name: cfxql_query
+        required: false
+        schema:
+          description: <a href='https://bot-docs.cloudfabrix.io/reference_guides/cfxql/'>cfxql
+            query</a> string to filter the results
+          title: Cfxql Query
+          type: string
+        style: form
+      - description: "search across fields: ['name', 'description', 'usecase', 'category',\
+          \ 'version']"
+        explode: true
+        in: query
+        name: search
+        required: false
+        schema:
+          description: "search across fields: ['name', 'description', 'usecase', 'category',\
+            \ 'version']"
+          title: Search
+          type: string
+        style: form
+      - description: Offset to start the results from.
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          description: Offset to start the results from.
+          minimum: 0.0
+          title: Offset
+          type: integer
+        style: form
+      - description: Maximum number of results to return
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 100
+          description: Maximum number of results to return
+          minimum: 1.0
+          title: Limit
+          type: integer
+        style: form
+      - description: Sort the output based on given fields
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          default:
+          - -timestamp
+          description: Sort the output based on given fields
+          items:
+            $ref: '#/components/schemas/dashboards_enum'
+          type: array
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableReportResponse'
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Fetch meta data for dashboards
+      tags:
+      - Dashboards
+  /api/v2/datasets:
+    get:
+      description: Fetch meta data about datasets
+      operationId: get_datasets
+      parameters:
+      - description: <a href='https://bot-docs.cloudfabrix.io/reference_guides/cfxql/'>cfxql
+          query</a> string to filter the results
+        explode: true
+        in: query
+        name: cfxql_query
+        required: false
+        schema:
+          description: <a href='https://bot-docs.cloudfabrix.io/reference_guides/cfxql/'>cfxql
+            query</a> string to filter the results
+          title: Cfxql Query
+          type: string
+        style: form
+      - description: "search across fields: ['name', 'schema']"
+        explode: true
+        in: query
+        name: search
+        required: false
+        schema:
+          description: "search across fields: ['name', 'schema']"
+          title: Search
+          type: string
+        style: form
+      - description: Offset to start the results from.
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          description: Offset to start the results from.
+          minimum: 0.0
+          title: Offset
+          type: integer
+        style: form
+      - description: Maximum number of results to return
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 100
+          description: Maximum number of results to return
+          minimum: 1.0
+          title: Limit
+          type: integer
+        style: form
+      - description: Sort the output based on given fields
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          default:
+          - -timestamp
+          description: Sort the output based on given fields
+          items:
+            $ref: '#/components/schemas/datasets_enum'
+          type: array
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableReportResponse'
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Fetch meta data about datasets
+      tags:
+      - Datasets
+    post:
+      description: Add a dataset.
+      operationId: add_dataset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatasetAddModel'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Add a dataset
+      tags:
+      - Datasets
+  /api/v2/pstreams:
+    get:
+      description: Fetch meta data about pstreams
+      operationId: get_pstreams
+      parameters:
+      - description: <a href='https://bot-docs.cloudfabrix.io/reference_guides/cfxql/'>cfxql
+          query</a> string to filter the results
+        explode: true
+        in: query
+        name: cfxql_query
+        required: false
+        schema:
+          description: <a href='https://bot-docs.cloudfabrix.io/reference_guides/cfxql/'>cfxql
+            query</a> string to filter the results
+          title: Cfxql Query
+          type: string
+        style: form
+      - description: "search across fields: ['name']"
+        explode: true
+        in: query
+        name: search
+        required: false
+        schema:
+          description: "search across fields: ['name']"
+          title: Search
+          type: string
+        style: form
+      - description: Offset to start the results from.
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          description: Offset to start the results from.
+          minimum: 0.0
+          title: Offset
+          type: integer
+        style: form
+      - description: Maximum number of results to return
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 100
+          description: Maximum number of results to return
+          minimum: 1.0
+          title: Limit
+          type: integer
+        style: form
+      - description: Sort the output based on given fields
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          default:
+          - -timestamp
+          description: Sort the output based on given fields
+          items:
+            $ref: '#/components/schemas/pstreams_enum'
+          type: array
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableReportResponse'
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Fetch meta data about pstreams
+      tags:
+      - Persistent Streams
+    post:
+      description: Add a new pstream to the system
+      operationId: add_pstream
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PstreamAddModel'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Add a pstream
+      tags:
+      - Persistent Streams
+  /api/v2/datasets/dataset/{name}:
+    delete:
+      description: Delete a dataset. Please note that all the data of the dataset
+        will be deleted and can not be undone.
+      operationId: delete_dataset
+      parameters:
+      - description: Dataset name to be deleted.
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          description: Dataset name to be deleted.
+          title: Name
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Delete a dataset
+      tags:
+      - Datasets
+  /api/v2/datasets/dataset/{name}/data:
+    delete:
+      description: |-
+        Delete dataset rows matching the input data
+            All the rows in existing dataset that match all the keys in input data are deleted.
+            NOTE: This directly updates the dataset and all drafts are removed.
+      operationId: delete_dataset_rows
+      parameters:
+      - description: Name of the dataset
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          description: Name of the dataset
+          title: Name
+          type: string
+        style: simple
+      - description: Array of keys to match for updating rows
+        explode: true
+        in: query
+        name: keys
+        required: true
+        schema:
+          description: Array of keys to match for updating rows
+          items:
+            type: string
+          title: Keys
+          type: array
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: List of dictionaries to replace/merge with existing data
+              items:
+                type: object
+              title: Data
+              type: array
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Delete matching dataset rows
+      tags:
+      - Datasets
+    get:
+      description: Get data of a dataset
+      operationId: get_dataset_data
+      parameters:
+      - description: Name of the dataset
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          description: Name of the dataset
+          title: Name
+          type: string
+        style: simple
+      - description: <a href='https://bot-docs.cloudfabrix.io/reference_guides/cfxql/'>cfxql
+          query</a> string to filter the results
+        explode: true
+        in: query
+        name: cfxql_query
+        required: false
+        schema:
+          description: <a href='https://bot-docs.cloudfabrix.io/reference_guides/cfxql/'>cfxql
+            query</a> string to filter the results
+          title: Cfxql Query
+          type: string
+        style: form
+      - description: "search across fields: ['name']"
+        explode: true
+        in: query
+        name: search
+        required: false
+        schema:
+          description: "search across fields: ['name']"
+          title: Search
+          type: string
+        style: form
+      - description: Sort the output based on given fields. Prepend '-' to sort descending
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          description: Sort the output based on given fields. Prepend '-' to sort
+            descending
+          items:
+            type: string
+          title: Sort
+          type: array
+        style: form
+      - description: Offset to start the results from.
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          description: Offset to start the results from.
+          minimum: 0.0
+          title: Offset
+          type: integer
+        style: form
+      - description: Maximum number of results to return
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 100
+          description: Maximum number of results to return
+          minimum: 1.0
+          title: Limit
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableReportResponse'
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get data of a dataset
+      tags:
+      - Datasets
+    put:
+      description: |-
+        Update (merge or replace) existing dataset data.
+            This function currently does not support deleting rows.<br/>
+            If replace is true, entire existing dataset data is replaced with the new data in input.<br/>
+            If replace is false, <br/>
+            <ul>
+                <li>If keys are not given, the input data is appened to the existing dataset.
+                <li>If keys are given then the following flow explains the operation<br/>
+                    For each row in the input data:
+                    <ul>
+                        <li>The rows with same values for all the keys are replaced with input row.
+                        <li>Other rows are appended to the existing dataset
+                    </ul>
+                Error raised when:
+                    <ul>
+                        <li>If there are duplicate rows in input data with same key values
+                        <li>If any key passed in keys is not present as a column in the input data
+                    </ul>
+            </ul>
+            NOTE: This directly updates the dataset and all drafts are removed.
+      operationId: update_dataset_data
+      parameters:
+      - description: Name of the dataset
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          description: Name of the dataset
+          title: Name
+          type: string
+        style: simple
+      - description: "If set to true, replace the existing data with new data"
+        explode: true
+        in: query
+        name: replace
+        required: false
+        schema:
+          default: false
+          description: "If set to true, replace the existing data with new data"
+          title: Replace
+          type: boolean
+        style: form
+      - description: Array of keys to match for updating rows
+        explode: true
+        in: query
+        name: keys
+        required: false
+        schema:
+          description: Array of keys to match for updating rows
+          items:
+            type: string
+          title: Keys
+          type: array
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: List of dictionaries to replace/merge with existing data
+              items:
+                type: object
+              title: Data
+              type: array
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Update rows of a dataset
+      tags:
+      - Datasets
+  /api/v2/datasets/dataset/{name}/data/all:
+    delete:
+      description: Delete entire data of a dataset
+      operationId: delete_dataset_all_data
+      parameters:
+      - description: Name of the dataset
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          description: Name of the dataset
+          title: Name
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Delete enitre data of a dataset
+      tags:
+      - Datasets
+  /api/v2/pstreams/pstream/{name}:
+    delete:
+      description: Delete a persistent stream.
+      operationId: delete_pstream
+      parameters:
+      - description: Name of the pstream to be deleted
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          description: Name of the pstream to be deleted
+          title: Name
+          type: string
+        style: simple
+      - description: "Delete data as well. If data is not deleted, adding the same\
+          \ pstream again will add the old data back."
+        explode: true
+        in: query
+        name: delete_data
+        required: false
+        schema:
+          default: false
+          description: "Delete data as well. If data is not deleted, adding the same\
+            \ pstream again will add the old data back."
+          title: Delete Data
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Delete a pstream.
+      tags:
+      - Persistent Streams
+    put:
+      description: Edit the attributes of a persistent stream
+      operationId: edit_pstream
+      parameters:
+      - description: Name of the pstream to be edited
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          description: Name of the pstream to be edited
+          title: Name
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PstreamEditModel'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Edit attributes of a pstream
+      tags:
+      - Persistent Streams
+  /api/v2/pstreams/pstream/{name}/data:
+    get:
+      description: Get data of a persistent stream
+      operationId: get_pstream_data
+      parameters:
+      - description: Name of the pstream
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          description: Name of the pstream
+          title: Name
+          type: string
+        style: simple
+      - description: <a href='https://bot-docs.cloudfabrix.io/reference_guides/cfxql/'>cfxql
+          query</a> string to filter the results
+        explode: true
+        in: query
+        name: cfxql_query
+        required: false
+        schema:
+          description: <a href='https://bot-docs.cloudfabrix.io/reference_guides/cfxql/'>cfxql
+            query</a> string to filter the results
+          title: Cfxql Query
+          type: string
+        style: form
+      - description: "search across fields: ['name']"
+        explode: true
+        in: query
+        name: search
+        required: false
+        schema:
+          description: "search across fields: ['name']"
+          title: Search
+          type: string
+        style: form
+      - description: Sort the output based on given fields. Prepend '-' to sort descending
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          description: Sort the output based on given fields. Prepend '-' to sort
+            descending
+          items:
+            type: string
+          title: Sort
+          type: array
+        style: form
+      - description: Offset to start the results from.
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          description: Offset to start the results from.
+          minimum: 0.0
+          title: Offset
+          type: integer
+        style: form
+      - description: Maximum number of results to return
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 100
+          description: Maximum number of results to return
+          minimum: 1.0
+          title: Limit
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableReportResponse'
+          description: Successful Response
+        "422":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get data of a pstream
+      tags:
+      - Persistent Streams
+components:
+  schemas:
+    DatasetAddModel:
+      example:
+        folder: Default
+        name: name
+        schema_name: schema_name
+        tag: tag
+      properties:
+        name:
+          title: Name
+          type: string
+        folder:
+          default: Default
+          title: Folder
+          type: string
+        schema_name:
+          title: Schema Name
+          type: string
+        tag:
+          title: Tag
+          type: string
+      required:
+      - name
+      title: DatasetAddModel
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    LoginInput:
+      example:
+        password: password
+        user: user
+      properties:
+        user:
+          title: User
+          type: string
+        password:
+          title: Password
+          type: string
+      required:
+      - password
+      - user
+      title: LoginInput
+      type: object
+    PstreamAddModel:
+      example:
+        name: example_pstream
+        attributes:
+          unique_keys:
+          - key1
+          - key2
+          retention_days: 31
+      properties:
+        name:
+          title: Name
+          type: string
+        attributes:
+          title: Attributes
+          type: object
+      required:
+      - name
+      title: PstreamAddModel
+      type: object
+    PstreamEditModel:
+      example:
+        attributes:
+          unique_keys:
+          - key1
+          - key2
+          retention_days: 31
+      properties:
+        attributes:
+          title: Attributes
+          type: object
+      title: PstreamEditModel
+      type: object
+    TableReportResponse:
+      example:
+        last_sort_results:
+        - Authentication Servers
+        - 9d74183bf12af49841f054467d25b1b6
+        properties: {}
+        reportMetaData:
+          reportColumnDefinitionList:
+          - hidden: false
+            id: name
+            identifier: name
+            key: false
+            sortable: true
+            title: name
+            type: TEXT
+            visible: true
+          title: Dashboards
+        offset: 100
+        limit: 100
+        sort:
+        - -name
+        total_count: 112
+        num_items: 12
+        is_first: false
+        is_last: false
+      properties:
+        last_sort_results:
+          description: Last sort tags used for internal puposes
+          items:
+            type: string
+          title: Last Sort Results
+          type: array
+        reportMetaData:
+          description: "Meta information about the report, including columns and types\
+            \ etc"
+          title: Reportmetadata
+          type: object
+        offset:
+          description: Starting offset in the filtered results
+          title: Offset
+          type: integer
+        limit:
+          description: Maximum number of results to be returned per page
+          title: Limit
+          type: integer
+        sort:
+          description: Sort order passed as part of request
+          items:
+            type: string
+          title: Sort
+          type: array
+        total_count:
+          description: Total number of results that matched the query
+          title: Total Count
+          type: integer
+        num_items:
+          description: Number of results returned in this page
+          title: Num Items
+          type: integer
+        is_first:
+          default: true
+          description: True if this page is first page
+          title: Is First
+          type: boolean
+        is_last:
+          default: true
+          description: True if this page is last page
+          title: Is Last
+          type: boolean
+      title: TableReportResponse
+      type: object
+    UserDetails:
+      description: Response for isUserAuthenticated request. This response contains
+        all the user information that is currently logged in.
+      example:
+        authenticated: true
+        company: CloudFabrix
+        first_name: Acme
+        firstname: Acme
+        id: acme@cfx.com
+        is_authenticated: true
+        is_workspaceadmin: false
+        is_workspacecreator: 0
+        last_name: Inc
+        lastname: Inc
+        login-time: 2023-06-28T15:35:30.500255
+        rdac_auth_token: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyLWlkIjoiYWNtZUBjZnguY29tIiwid29ya3NwYWNlaWQiOiI4MGQ1MGI0ZS1lMWYyLTQ3ZGUtOGZmMC1hMzhjMTgwY2VmYmIifQ.4lE3Uzlh7PJwyuCJ8DdJ2xq6szMzF-B4PSTjomrOl8k
+        remote_user: false
+        reset_password: 0
+        role: TENANT_USERS
+        session-id: 39030163f5eb4e30a713be9c9c4bab7f
+        status: ok
+        tenantid: 80d50b4e-e1f2-47de-8ff0-a38c180cefbb
+        user: acme@cfx.com
+        workspace: ws80d50b
+        workspaceid: 80d50b4e-e1f2-47de-8ff0-a38c180cefbb
+      properties:
+        authenticated:
+          description: Whether user is authenticated
+          title: Authenticated
+          type: boolean
+        company:
+          description: Company the user belongs to
+          title: Company
+          type: string
+        first_name:
+          description: First name
+          title: First Name
+          type: string
+        id:
+          description: Id of the user (email address)
+          title: Id
+          type: string
+        is_authenticated:
+          description: Alias to 'authenticated'
+          title: Is Authenticated
+          type: boolean
+        is_workspaceadmin:
+          description: Is the user a workspace admin
+          title: Is Workspaceadmin
+          type: boolean
+        is_workspacecreator:
+          description: Is the user a workspace creator
+          title: Is Workspacecreator
+          type: boolean
+        last_name:
+          description: Last Name
+          title: Last Name
+          type: boolean
+        lastname:
+          description: Alias to last_name
+          title: Lastname
+          type: boolean
+        login_time:
+          description: Login time in ISO format
+          title: Login Time
+          type: string
+        rdac_auth_token:
+          description: Authentication Token
+          title: Rdac Auth Token
+          type: string
+        remote_user:
+          description: Whether user is a remote user or a local user
+          title: Remote User
+          type: boolean
+        role:
+          description: User Role
+          title: Role
+          type: string
+        session_id:
+          description: Current session id
+          title: Session Id
+          type: string
+        status:
+          description: Current status of the user
+          title: Status
+          type: string
+        tenantid:
+          description: Tenant ID of the user
+          title: Tenantid
+          type: string
+        user:
+          description: alias to 'id'
+          title: User
+          type: string
+        workspace:
+          description: Name of the workspace
+          title: Workspace
+          type: string
+        workspaceid:
+          description: ID of the workspace
+          title: Workspaceid
+          type: string
+      title: UserDetails
+      type: object
+    ValidationError:
+      properties:
+        loc:
+          items:
+            $ref: '#/components/schemas/Location_inner'
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+    dashboards_enum:
+      description: An enumeration.
+      enum:
+      - category
+      - -category
+      - description
+      - -description
+      - folder
+      - -folder
+      - name
+      - -name
+      - saved_time
+      - -saved_time
+      - timestamp
+      - -timestamp
+      - usecase
+      - -usecase
+      - version
+      - -version
+      - versions_count
+      - -versions_count
+      title: dashboards_enum
+      type: string
+    datasets_enum:
+      description: An enumeration.
+      enum:
+      - folder
+      - -folder
+      - format
+      - -format
+      - mem_size_mb
+      - -mem_size_mb
+      - name
+      - -name
+      - num_columns
+      - -num_columns
+      - num_rows
+      - -num_rows
+      - saved_time
+      - -saved_time
+      - schema
+      - -schema
+      - timestamp
+      - -timestamp
+      title: datasets_enum
+      type: string
+    pstreams_enum:
+      description: An enumeration.
+      enum:
+      - collection_status
+      - -collection_status
+      - database
+      - -database
+      - datastore_type
+      - -datastore_type
+      - index_name
+      - -index_name
+      - name
+      - -name
+      - retention_days
+      - -retention_days
+      - saved_time
+      - -saved_time
+      - system_defined
+      - -system_defined
+      - timestamp
+      - -timestamp
+      title: pstreams_enum
+      type: string
+    Location_inner:
+      anyOf:
+      - type: string
+      - type: integer
